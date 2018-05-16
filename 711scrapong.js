@@ -23,6 +23,7 @@ var SEVNE_COLOR = {
 }
 
 function main(){
+  
   var attachments = []
   var html = UrlFetchApp.fetch(NEW_ITEN_URL + REGIONS[REGION] + QUERY.getContentText())
   var items = Parser.data(html).from('<li class="item">').to('</div>\n</li>').iterate()
