@@ -16,28 +16,28 @@ var QUERY = 'page=1&sort=f&limit=100'
 
 var SLACK_INCOMING_URL = ''
 
-var SEVNE_COLOR = {
+var SEVNE_COLOR = [
 '#f58220', // セブンオレンジ
 '#00a54f', // セブングリーン
 '#ee1c23', // セブンレッド
-}
+]
 
-function main(){
-  
-  var attachments = []
-  var html = UrlFetchApp.fetch(NEW_ITEN_URL + REGIONS[REGION] + QUERY.getContentText())
-  var items = Parser.data(html).from('<li class="item">').to('</div>\n</li>').iterate()
-  for(i=0; i<items.length; ++i){
-  var link = ORIGIN + items[i].match(/<a href="(.+)">/)[1]
-  var image = items[i].match(/src="([^"]+)" alt="商品画像")[1]
-  var name = items[i].match(/<div class="itemName">(.+?)<\/li>)[1]
-  var price = items[i].match(/<div class="price">(.+?)<\/li>)[1]
-  var launch = items[i].match(/<div class="launch">(.+?)<\/li>)[1]
-  var region = items[i].match(/<div class="reagion">(.+?)<\/li>)[1].replace(/<\/?em>/g, '')
-  attachments.push(makeAttachment(link, image, ,name, price, launch, region, i))
-  }
+function main() {
+    var attachments = []
+
+    var html = UrlFetchApp.fetch(NEW_ITEM_URL + REGIONS[REGION] + QUERY).getContentText()
+    var items = Parser.data(html).from('<li class="item">').to('</div>\n</li>').iterate()
+    for(i=0;i<items.length;++i){      
+      var link   = ORIGIN + items[i].match(/<a href="(.+)">/)[1]
+      var image  = items[i].match(/src="([^"]+)" alt="商品画像"/)[1]
+      var name   = items[i].match(/<div class="itemName">.+">(.+?)<\/a><\/strong>/)[1]
+      var price  = items[i].match(/<li class="price">(.+?)<\/li>/)[1]  
+      var launch = items[i].match(/<li class="launch">(.+?)<\/li>/)[1]
+      var region = items[i].match(/<li class="region">(.+?)<\/li>/)[1].replace('<em>販売地域</em>', '')
+      attachments.push(makeAttachment(link, image, name, price, launch, region, i))
+    }
   sendSlack(attachments)
-}
+}v
 
 function makeAttachment(link, image, name, price, launch, region, i){
   return {
